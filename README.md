@@ -36,18 +36,21 @@ Everything happens locally. The model runs via [MLX-LM](https://github.com/ml-ex
 - 🛠 **Build Mode** — Coding agent with a live preview canvas. Writes multi-file projects into a sandboxed workspace.
 - 💬 **Chat Mode** — Conversational AI with tool use (web search, URL fetch, calculator, bash).
 - 🔄 **Model Switching** — Hot-swap between 4 Gemma variants on the fly.
+- ⚡ **Speculative Decoding** — Optionally pair your model with a small assistant drafter for accelerated generation.
 - 🎤 **Voice Input** — Local speech-to-text via in-browser Whisper.
 - ✈️ **Works Offline** — After the one-time model download, everything runs without internet.
 - 💾 **Zero Config** — Python venv + MLX runtime auto-provisions on first launch.
 
 ## Available Models
 
-| Model | Size | Best For |
-|---|---|---|
-| Gemma 4 E2B | ~1.5 GB | Fast Q&A, simple tasks |
-| **Gemma 4 E4B** | **~3 GB** | **Recommended.** Speed + capability balance |
-| Gemma 4 27B MoE | ~8 GB | Stronger reasoning (needs 16 GB+ RAM) |
-| Gemma 4 31B | ~18 GB | Maximum quality (needs 32 GB+ RAM) |
+| Model | Size | Draft Model | Best For |
+|---|---|---|---|
+| Gemma 4 E2B | ~1.5 GB | ⚡ +1 GB | Fast Q&A, simple tasks |
+| **Gemma 4 E4B** | **~3 GB** | **⚡ +1 GB** | **Recommended.** Speed + capability balance |
+| Gemma 4 27B MoE | ~16 GB | ⚡ +1 GB | Stronger reasoning (needs 16 GB+ RAM) |
+| Gemma 4 31B | ~18 GB | ⚡ +1 GB | Maximum quality (needs 32 GB+ RAM) |
+
+All models support optional [speculative decoding](#speculative-decoding) using a small Gemma 4 assistant drafter (~0.5B params, +1 GB download).
 
 ## Getting Started
 
@@ -77,9 +80,21 @@ Produces a signed `.dmg` in `dist/`. Share it directly — recipients just drag 
 | Layer | Tech |
 |---|---|
 | App Shell | Electron + Vite + React 19 + TypeScript + Tailwind |
-| Model Runtime | MLX-LM (auto-installed into a local venv) |
+| Model Runtime | MLX-LM (auto-installed into a local venv), speculative decoding via `--draft-model` |
 | Speech-to-Text | transformers.js (Whisper, runs in-browser via WASM) |
 | Workspace | Per-conversation sandboxed filesystem + local HTTP server |
+
+## Speculative Decoding
+
+Gemma Chat supports **speculative decoding** using Gemma 4's Multi-Token Prediction (MTP) assistant drafters. When enabled, a small 4-layer drafter model (~0.5B params) generates several candidate tokens per round, while the full target model verifies them in a single forward pass. Accepted tokens are kept; rejected ones are discarded.
+
+**How to enable:** In the model picker (welcome screen or in-chat header), toggle the "Speculative decoding" option for any model that has a known compatible drafter.
+
+**Performance notes:**
+- Greedy (temperature 0) output is byte-identical to non-draft generation.
+- Speedups are most noticeable with batch processing and larger targets (MoE, 31B).
+- Single-user interactive chat on smaller models (E2B, E4B) may see smaller or neutral gains due to drafter overhead.
+- The drafter is downloaded alongside the target model on first use (~1 GB additional).
 
 ## Architecture
 
@@ -100,7 +115,7 @@ src/
 │   │   ├── Composer.tsx   Input + mic button
 │   │   └── Sidebar.tsx    Conversation list
 │   └── lib/whisper.ts     Browser Whisper pipeline
-└── shared/types.ts    IPC types + model registry
+└── shared/types.ts    IPC types, model registry, ModelConfig + draft pairs
 ```
 
 ### Under the Hood
