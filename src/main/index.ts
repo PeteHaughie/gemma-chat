@@ -106,7 +106,7 @@ async function ensureMLXRunning(config: ModelConfig): Promise<string> {
   let mlx = locateMLX()
   if (!mlx) {
     throw new Error(
-      'Python 3.10–3.13 not found. Install via Homebrew: brew install python@3.13'
+      'Python 3.10–3.13 not found. Install it with Homebrew (`brew install python@3.13`) or pyenv.'
     )
   }
 
