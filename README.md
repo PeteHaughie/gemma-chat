@@ -12,6 +12,9 @@
 
 ---
 
+<img width="960" height="593" alt="Gemma4-Vibecoding" src="https://github.com/user-attachments/assets/b4149e63-48df-456e-8007-c607b7d46f37" />
+
+
 ## The Idea
 
 <img width="960" height="593" alt="Gemma4-Vibecoding" src="https://github.com/user-attachments/assets/4c45a83c-7c87-4c70-a293-fe475b7e34fa" />
@@ -127,7 +130,7 @@ src/
 - [MLX](https://github.com/ml-explore/mlx) by Apple Machine Learning Research
 - [transformers.js](https://github.com/huggingface/transformers.js) by Hugging Face
 
-Created by [@ammaar](https://x.com/ammaar)
+Created by [@ammaar](https://x.com/ammaar) and AI :) 
 
 ## License
 
